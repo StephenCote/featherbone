@@ -836,8 +836,8 @@
     }
 
     function doOpenPdf(req, res) {
-        let path = "./files/downloads/";
-        let file = path + req.params.file;
+        let filedir = "./files/downloads/";
+        let file = filedir + req.params.file;
 
         fs.readFile(file, function (err, resp) {
             if (err) {
@@ -863,27 +863,6 @@
             req.body.id || req.body.ids,
             "./files/downloads/",
             req.body.filename,
-            req.user.name
-        ).then(
-            respond.bind(res)
-        ).catch(
-            error.bind(res)
-        );
-    }
-
-    function doPrintPdfWorksheet(req, res) {
-        let apiPath = req.url.slice(10);
-        let feather = resolveName(apiPath);
-        logger.verbose("Print PDF List", feather, req.params.format);
-
-        err.bind(res)({message: "Not implemented yet"});
-        return;
-
-        datasource.printPdfSheet(
-            req.body.feather,
-            req.body.workbook,
-            req.body.sheet,
-            "./files/pdf/",
             req.user.name
         ).then(
             respond.bind(res)
@@ -1073,6 +1052,25 @@
         } else if (req.query.feather) {
             payload.data.feather = req.query.feather;
         }
+
+        logger.verbose(payload);
+        datasource.request(payload).then(
+            respond.bind(res)
+        ).catch(
+            error.bind(res)
+        );
+    }
+
+    function doStringifyForm(req, res) {
+        let payload = {
+            method: "GET",
+            name: "stringifyForm",
+            user: req.user.name,
+            data: {
+                form: req.query.form,
+                ids: req.query.ids
+            }
+        };
 
         logger.verbose(payload);
         datasource.request(payload).then(
@@ -1424,6 +1422,7 @@
         app.get("/currency/base", doGetBaseCurrency);
         app.get("/currency/convert", doConvertCurrency);
         app.get("/do/is-authorized", doIsAuthorized);
+        app.get("/do/stringify-form", doStringifyForm);
         app.post("/do/aggregate/", doAggregate);
         app.post("/data/object-authorizations", doGetObjectAuthorizations);
         app.post("/do/change-password/", doChangePassword);
@@ -1432,7 +1431,6 @@
         app.post("/do/export/:format/:feather", doExport);
         app.post("/do/import/:format/:feather", doImport);
         app.post("/do/print-pdf/form/", doPrintPdfForm);
-        app.post("/do/print-pdf/worksheet/", doPrintPdfWorksheet);
         app.post("/do/subscribe/:query", doSubscribe);
         app.post("/do/unsubscribe/:query", doUnsubscribe);
         app.post("/do/lock", doLock);

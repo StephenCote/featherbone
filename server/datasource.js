@@ -43,6 +43,7 @@
     const {Workbooks} = require("./services/workbooks");
     const {Config} = require("./config");
     const {PDF} = require("./services/pdf");
+    const {Stringify} = require("./services/stringify");
 
     const f = require("../common/core");
     const jsonpatch = require("fast-json-patch");
@@ -64,6 +65,7 @@
     const tools = new Tools();
     const workbooks = new Workbooks();
     const pdf = new PDF();
+    const stringify = new Stringify();
 
     /**
         Server datasource class.
@@ -1799,6 +1801,8 @@
           {{/crossLink}}
           * {{#crossLink "Services.Workbooks/deleteWorkbook:method"}}
           {{/crossLink}}
+          * {{#crossLink "Services.Stringify/printForm:method"}}
+          {{/crossLink}}
 
         @example
             // Create a function that updates something specific
@@ -2093,6 +2097,7 @@
     that.registerFunction("GET", "isAuthorized", feathers.isAuthorized);
     that.registerFunction("GET", "isSuperUser", tools.isSuperUser);
     that.registerFunction("GET", "getAuthorizations", tools.getAuthorizations);
+    that.registerFunction("GET", "stringifyForm", stringify.printForm);
     that.registerFunction("PATCH", "patchProfile", profile.patchProfile);
     that.registerFunction("POST", "changeOwnPassword", role.changeOwnPassword);
     that.registerFunction("POST", "changeRoleLogin", role.changeRoleLogin);
